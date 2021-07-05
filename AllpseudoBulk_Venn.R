@@ -19,7 +19,7 @@ os17 <- subset(OS, cells = WhichCells(OS, expression = cond == "OS17"))
 t143B <- subset(OS, cells = WhichCells(OS, expression = cond == "t143b"))
 NCHOS2 <- subset(OS, cells = WhichCells(OS, expression = cond == "NCHOS2"))
 NCHOS7 <- subset(OS, cells = WhichCells(OS, expression = cond == "NCHOS7"))
- 
+  
 #extract markers
 data <- os17
 DimPlot(data, group.by = "src")
