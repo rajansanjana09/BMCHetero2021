@@ -20,17 +20,17 @@ NCHOS2 <- subset(OS, cells = WhichCells(OS, expression = cond == "NCHOS2"))
 NCHOS7 <- subset(OS, cells = WhichCells(OS, expression = cond == "NCHOS7"))
   
 #extract markers
-data <- NCHOS7
+data <- os17
 DimPlot(data, group.by = "src")
 
 #rename Idents to src type before DGE analysis
-Idents(data, cells = WhichCells(data, expression = src == "NCHOS7_Flank")) <- "Culture"
-Idents(data, cells = WhichCells(data, expression = src == "NCHOS7_Lung")) <- "Lung"
-Idents(data, cells = WhichCells(data, expression = src == "NCHOS7_Tibia")) <- "Tibia"
+Idents(data, cells = WhichCells(data, expression = src == "OS17_Culture")) <- "Culture"
+Idents(data, cells = WhichCells(data, expression = src == "OS17_Lung")) <- "Lung"
+Idents(data, cells = WhichCells(data, expression = src == "OS17_Tibia")) <- "Tibia"
 data[["tissue"]] <- Idents(data)
 
-NCHOS7 <- data
-DimPlot(NCHOS7)
+os17 <- data
+DimPlot(os17)
 
 data <- list(
   os17 = os17,
@@ -144,7 +144,7 @@ D = genes[[4]]
 #   dplyr::select(gs_name, human_gene_symbol)
 # m_t2g.h <- msigdbr(species = "Homo sapiens", category = "H") %>%
 #   dplyr::select(gs_name, human_gene_symbol)
-# m_t2n.h <- msigdbr(species = "Homo sapiens", category = "H") %>% 
+# m_t2n.h <- msigdbr(species = "Homo sapiens", category = "H") %>%
 #   dplyr::select(gs_id, gs_name)
 # m_t2g=rbind(m_t2g.c2,m_t2g.c6)
 # 
@@ -169,3 +169,38 @@ em[,2] <- -log10(em[,2])
 pathways[[1]] <- em
 
 write.xlsx(pathways, file ="R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/pathways.xlsx", col.names = TRUE, row.names = TRUE, append = FALSE)
+save.image(file ="R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/AllpseudoBulk_Venn.RData")
+
+####################Intersection of deferentially regulated genes between Bone colonization and Lung colonization
+# total <- list(
+#   Tibia.up = Tibia.up,
+#   Tibia.down = Tibia.down,
+#   Lung.up = Lung.up,
+#   Lung.down = Lung.down
+# )
+# all.genes <- list(NULL)
+# for (i in 1:4) {
+#   genes <- total[[i]]
+#   A = genes[[1]]
+#   B = genes[[2]]
+#   C = genes[[3]]
+#   D = genes[[4]]
+#   intersect <- intersect(intersect(intersect(A,B),C),D)
+#   all.genes[[i]] <- intersect
+# }
+# 
+# x <- list(
+#   A = all.genes[[1]],
+#   B = all.genes[[2]],
+#   C = all.genes[[3]],
+#   D = all.genes[[4]]
+# )
+# 
+# pdf("TibiaUpdown_Lungupdown.pdf", width = 5, height = 5)
+# plot <- ggvenn(
+#   x,
+#   fill_color = c("#0073C2FF", "#EFC000FF", "#868686FF", "#CD534CFF"),
+#   stroke_size = 0.9, set_name_size = 4,  show_percentage = TRUE
+# )
+# plot
+# dev.off()
