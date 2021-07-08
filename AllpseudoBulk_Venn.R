@@ -43,7 +43,7 @@ data <- list(
 Lung.up <- list(NULL)
 for (i in 1:length(data)) {
   tmp <- data[[i]]
-  x <- FindMarkers(tmp, ident.1 = "Lung", ident.2 = "Culture", only.pos = TRUE, min.pct = 0.25)
+  x <- FindMarkers(tmp, ident.1 = "Lung", ident.2 = "Culture", only.pos = TRUE, min.pct = 0.1)
   Lung.up[[i]] <- rownames(x)
   }
 
@@ -51,7 +51,7 @@ for (i in 1:length(data)) {
 Tibia.up <- list(NULL)
 for (i in 1:length(data)) {
   tmp <- data[[i]]
-  x <- FindMarkers(tmp, ident.1 = "Tibia", ident.2 = "Culture", only.pos = TRUE, min.pct = 0.25)
+  x <- FindMarkers(tmp, ident.1 = "Tibia", ident.2 = "Culture", only.pos = TRUE, min.pct = 0.1)
   Tibia.up[[i]] <- rownames(x)
 }
 
@@ -59,7 +59,7 @@ for (i in 1:length(data)) {
 Lung.down <- list(NULL)
 for (i in 1:length(data)) {
   tmp <- data[[i]]
-  x <- FindMarkers(tmp, ident.1 = "Lung", ident.2 = "Culture", only.pos = FALSE, min.pct = 0.25)
+  x <- FindMarkers(tmp, ident.1 = "Lung", ident.2 = "Culture", only.pos = FALSE, min.pct = 0.1)
   x <- x[x$avg_log2FC<0,]
   Lung.down[[i]] <- rownames(x)
 }
@@ -68,33 +68,10 @@ for (i in 1:length(data)) {
 Tibia.down <- list(NULL)
 for (i in 1:length(data)) {
   tmp <- data[[i]]
-  x <- FindMarkers(tmp, ident.1 = "Tibia", ident.2 = "Culture", only.pos = FALSE, min.pct = 0.25)
+  x <- FindMarkers(tmp, ident.1 = "Tibia", ident.2 = "Culture", only.pos = FALSE, min.pct = 0.1)
   x <- x[x$avg_log2FC<0,]
   Tibia.down[[i]] <- rownames(x)
 }
-
-#UpDown genes
-TC.markers <- FindMarkers(data, ident.1 = "Tibia", ident.2 = "Culture", only.pos = FALSE, min.pct = 0.25)
-LC.markers <- FindMarkers(data, ident.1 = "Lung", ident.2 = "Culture", only.pos = FALSE, min.pct = 0.25)
-
-#Separate pos and neg avg_log2FC
-TC.dn.markers <- TC.markers[TC.markers$avg_log2FC<0,]
-TC.up.markers <- TC.markers[TC.markers$avg_log2FC>0,]
-
-LC.dn.markers <- LC.markers[LC.markers$avg_log2FC<0,]
-LC.up.markers <- LC.markers[LC.markers$avg_log2FC>0,]
-
-# view results
-write.xlsx(TC.dn.markers, file = "R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/2.TC.dn.markers.xlsx", 
-           col.names = TRUE, row.names = TRUE, append = FALSE)
-write.xlsx(TC.up.markers, file = "R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/1.TC.up.markers.xlsx", 
-           col.names = TRUE, row.names = TRUE, append = FALSE)
-
-write.xlsx(LC.dn.markers, file = "R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/4.LC.dn.markers.xlsx", 
-           col.names = TRUE, row.names = TRUE, append = FALSE)
-write.xlsx(LC.up.markers, file = "R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/3.LC.up.markers.xlsx", 
-           col.names = TRUE, row.names = TRUE, append = FALSE)
-
 
 ############################Example Venn Diagram
 # if (!require(devtools)) install.packages("devtools")
