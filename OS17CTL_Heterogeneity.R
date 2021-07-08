@@ -52,6 +52,24 @@ lung.raw <- processLTBC(lung.raw,
                         ymax = 1.75,
                         relative = T)
 
+
+#######Export Lineage Tag enrichment plots
+pdf("Culture_LT.pdf", width = 7, height = 2)
+cx.raw$fig
+dev.off()
+
+pdf("Tibia_LT.pdf", width = 7, height = 2)
+tib.raw$fig
+dev.off()
+
+pdf("Lung_LT.pdf", width = 7, height = 2)
+lung.raw$fig
+dev.off()
+
+cx.raw <- cx.raw$sobject
+tib.raw <- tib.raw$sobject
+lung.raw <- lung.raw$sobject
+
 #Subset all to #2800 cells in each condition 
 cx.raw <- subset(cx.raw, cells = sample(Cells(cx.raw), 2800))
 tib.raw <- subset(tib.raw, cells = sample(Cells(tib.raw), 2800))
