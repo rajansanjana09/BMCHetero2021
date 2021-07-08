@@ -1,4 +1,5 @@
 ####################subset to cells that have a lineage tag
+memory.limit(size = 40000)
 #Culture
 Culture.LTcells <- vector(mode = "character")
 for(i in 1:nrow(cx.lt.list)){
@@ -79,7 +80,7 @@ bp <-  ggplot(as.data.frame(df), aes(x = Var1, y = Freq)) +
   ylab("Count") +
   xlab("Phase")
 
-################Pathways activated in top 10 lineages
+#######################Pathways activated in top 10 lineages
 
 lung.lt.list[1:10,1]
 # 052-082154 
@@ -100,34 +101,61 @@ for(i in 1:10) {
   cells <- WhichCells(data, expression = lt == lung.lt.list[[i,1]])
   Idents(object = data, cells = cells) <- paste("Enriched Lineage", i, sep = " ")
 }
+
+library(forcats)
+Idents(data) <- fct_rev(Idents(data))
+
 # Idents(data) <- data$seurat_clusters
 # Stash cell identity classes
 data[["Lineage"]] <- Idents(data)
 
-DimPlot(data, split.by = "Lineage")
+DimPlot(data)
+#reorganize Lineage levels
+
+
 #Top markers for each lineage
 
 # find markers for every cluster compared to all remaining cells, report positive and negative ones
 data.markers <- FindAllMarkers(data, only.pos = FALSE, min.pct = 0.25, logfc.threshold = 0.25)
+data.markers <- FindAllMarkers(data, only.pos = TRUE)
 
-em.hm <- DGEA(data)E
-em.hm.lt <- em.hm[-c(11:14)]
-clust.ids <- clust.ids[-c(11:14)]
+#Run through function
+em.hm <- DGEA(data)
+
+#Remove non-LT clusters
+em.hm.lt <- em.hm[-c(1:4)]
+clust.ids = sort(unique(data@active.ident))
+clust.ids <- clust.ids[-c(1:4)]
 c <- rownames(em.hm.lt)
 #remove "HALLMARK_"
 c <- gsub("HALLMARK_", "", c)
 #remove "_" by removing special characters
 c <- gsub("_", " ", c)
 rownames(em.hm.lt) <- c
-col.breaks=seq(-log10(1),min(max(-log10(em.hm.lt))+1,18),by=0.5)
+#remove rows with low pvalues
+row_names_df_to_remove<-c("FATTY ACID METABOLISM",
+                          "ADIPOGENESIS",
+                          "PEROXISOME",
+                          "SPERMATOGENESIS",
+                          "XENOBIOTIC METABOLISM",
+                          "PI3K AKT MTOR SIGNALING",
+                          "HEDGEHOG SIGNALING")
+em.hm.lt <- em.hm.lt[!(row.names(em.hm.lt) %in% row_names_df_to_remove),]
+
+col.breaks=seq(-log10(1),min(max(-log10(em.hm.lt))+1,20),by=0.5)
 col=inferno(length(col.breaks)) # library(viridis)
 col=c("white",colorRampPalette(brewer.pal(n = 7, name ="Reds"))(50))
-pheatmap(-log10(em.hm.lt[,1:length(clust.ids)]),cluster_rows = TRUE,cluster_cols = TRUE,
-         cellwidth = 20,cellheight = 10,treeheight_row = 0,treeheight_col=0,
-         color = col,scale='none',breaks=col.breaks,fontsize = 11)
-
-# DotPlot(data, features = rownames(data)) + RotatedAxis() try with known gene list markers 
-
+pheatmap(-log10(em.hm.lt[,1:length(clust.ids)]),
+         cluster_rows = TRUE,
+         cluster_cols = FALSE,
+         cellwidth = 20,
+         cellheight = 10,
+         treeheight_row = 0,
+         treeheight_col=0,
+         color = col,
+         scale='none',
+         breaks=col.breaks,
+         fontsize = 11)
 
 ########################Run IPA on the DEGs from top ten lineages
 #NOTE: After Enriched lineage 5, not more than 25 DEGs with P_adj_val < 0.01
