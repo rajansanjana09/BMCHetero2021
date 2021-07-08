@@ -24,3 +24,5 @@ barplot(tmp, drop=TRUE, showCategory=12, )
 egmt@ontology
 
 
+geom_barplot() + coord_flip()
+
