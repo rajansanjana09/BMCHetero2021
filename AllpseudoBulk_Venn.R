@@ -76,12 +76,12 @@ for (i in 1:length(data)) {
 ############################Example Venn Diagram
 # if (!require(devtools)) install.packages("devtools")
 # devtools::install_github("yanlinlin82/ggvenn")
-# library(ggvenn)
+library(ggvenn)
 
-# if (!require(devtools)) install.packages("devtools")
+if (!require(devtools)) install.packages("devtools")
 # devtools::install_github("gaospecial/ggVennDiagram")
 # library("ggVennDiagram")
-genes <- Tibia.up
+genes <- Lung.down
 x <- list(
   A = genes[[1]],
   B = genes[[2]],
@@ -89,11 +89,11 @@ x <- list(
   D = genes[[4]]
 )
 
-pdf("Tibia.up.pdf", width = 5, height = 5)
+pdf("Lung.down.pdf", width = 7, height = 7)
 plot <- ggvenn(
   x,
   fill_color = c("#0073C2FF", "#EFC000FF", "#868686FF", "#CD534CFF"),
-  stroke_size = 0.9, set_name_size = 4,  show_percentage = TRUE
+  stroke_size = 0.9, set_name_size = 10,  show_percentage = TRUE
 )
 plot
 dev.off()
@@ -108,7 +108,7 @@ dev.off()
 #         legend.position = "right")
 
 ###Extract genes that are shared in these datasets
-genes <- Tibia.up
+genes <- Lung.down
 A = genes[[1]]
 B = genes[[2]]
 C = genes[[3]]
@@ -143,7 +143,7 @@ em[,2] <- -log10(em[,2])
 # barplot(em)
 
 # pathways <- list(NULL)
-pathways[[1]] <- em
+pathways[[4]] <- em
 
 write.xlsx(pathways, file ="R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/pathways.xlsx", col.names = TRUE, row.names = TRUE, append = FALSE)
 save.image(file ="R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/AllpseudoBulk_Venn.RData")
@@ -181,3 +181,18 @@ save.image(file ="R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/AllpseudoBu
 # )
 # plot
 # dev.off()
+
+################ Two sided Barplot
+SanjanaPlots <- read.delim("C:/Users/rssxr002/Downloads/SanjanaPlots.txt")
+
+ggplot(SanjanaPlots, aes(x = -1 * Order,
+                         y = p.adjust,
+                         fill = p.adjust > 0)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  facet_wrap(~ Tissue) +
+  scale_fill_brewer(type = "qual", palette = "Set1") +
+  geom_text(aes(y = Label_y * 3, label = Pathway)) +
+  theme_bw() +
+  ylab("") +
+  ylim(-5, 5)
