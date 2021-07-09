@@ -145,7 +145,7 @@ em.hm.lt <- em.hm.lt[!(row.names(em.hm.lt) %in% row_names_df_to_remove),]
 col.breaks=seq(-log10(1),min(max(-log10(em.hm.lt))+1,20),by=0.5)
 col=inferno(length(col.breaks)) # library(viridis)
 col=c("white",colorRampPalette(brewer.pal(n = 7, name ="Reds"))(50))
-pheatmap(-log10(em.hm.lt[,1:length(clust.ids)]),
+p <- pheatmap(-log10(em.hm.lt[,1:length(clust.ids)]),
          cluster_rows = TRUE,
          cluster_cols = FALSE,
          cellwidth = 20,
@@ -157,31 +157,33 @@ pheatmap(-log10(em.hm.lt[,1:length(clust.ids)]),
          breaks=col.breaks,
          fontsize = 11)
 
+pdf("EnrichedLTHeatmap.pdf", width = 9, height = 10)
+print(p)
+dev.off()
+
 ########################Run IPA on the DEGs from top ten lineages
 #NOTE: After Enriched lineage 5, not more than 25 DEGs with P_adj_val < 0.01
-#Think about if the enrichr data is valid and do we need to run a GSEA for Glycolysis alone
-#How is DEG analysis done, do we filter genes based on pvalue, pr adj p value from FindMarkers output
-#Do we have to re-do the analysis in CCR uncorrected space?
-L1.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 1", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
-L2.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 2", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
-L3.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 3", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
-L4.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 4", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
-L5.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 5", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
-L6.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 6", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
-L7.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 7", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
-L8.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 8", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
-L9.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 9", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
-L10.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 10", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
 
-#remove unnecessary columns
-myList <- list(L1.markers, L2.markers, L3.markers, L4.markers, L5.markers, L6.markers, L7.markers, L8.markers, L9.markers, L10.markers)
-myList <- lapply(myList, function(x) { x["p_val"] <- NULL; x[, 2:3] <- NULL; x })
-
-#write markers to excel sheet
-names <- c("L1.markers", "L2.markers", "L3.markers", "L4.markers", "L5.markers", "L6.markers", "L7.markers", "L8.markers", "L9.markers", "L10.markers")
-library(xlsx)
-for (i in 1:10){
-  location <- paste0("R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/L",i,".markers.xlsx", sep = "")
-  write.xlsx(myList[[i]], file = location, 
-             col.names = TRUE, row.names = TRUE, append = FALSE)
-} 
+# L1.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 1", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
+# L2.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 2", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
+# L3.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 3", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
+# L4.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 4", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
+# L5.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 5", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
+# L6.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 6", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
+# L7.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 7", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
+# L8.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 8", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
+# L9.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 9", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
+# L10.markers <- FindMarkers(data, ident.1 = "Enriched Lineage 10", ident.2 = NULL, only.pos = FALSE, min.pct = 0.25)
+# 
+# #remove unnecessary columns
+# myList <- list(L1.markers, L2.markers, L3.markers, L4.markers, L5.markers, L6.markers, L7.markers, L8.markers, L9.markers, L10.markers)
+# myList <- lapply(myList, function(x) { x["p_val"] <- NULL; x[, 2:3] <- NULL; x })
+# 
+# #write markers to excel sheet
+# names <- c("L1.markers", "L2.markers", "L3.markers", "L4.markers", "L5.markers", "L6.markers", "L7.markers", "L8.markers", "L9.markers", "L10.markers")
+# library(xlsx)
+# for (i in 1:10){
+#   location <- paste0("R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/L",i,".markers.xlsx", sep = "")
+#   write.xlsx(myList[[i]], file = location, 
+#              col.names = TRUE, row.names = TRUE, append = FALSE)
+# } 
