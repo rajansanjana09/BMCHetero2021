@@ -133,23 +133,87 @@ os17.nC <- nRes(os17,
                 res = seq(from = 0.2, to = 0.3, by = 0.01))
 plot <- pSil(os17.nC, 0.3)
 os17.3 <- os17 %>% FindClusters(resolution = 0.3)
-os17.2 <- os17 %>% FindClusters(resolution = 0.2)
+os17 <- os17 %>% FindClusters(resolution = 0.2)
 
 # find markers for every cluster compared to all remaining cells, report only the positive ones
-os17.markers <- FindAllMarkers(os17.2, only.pos = FALSE, min.pct = 0.25, logfc.threshold = 0.25)
+os17.markers <- FindAllMarkers(os17, only.pos = FALSE, min.pct = 0.25, logfc.threshold = 0.25)
 
 #Heatmap
 os17.markers %>%
   group_by(cluster) %>%
   top_n(n = 5, wt = avg_log2FC) -> top10
 
-# pdf("All.pdf", width = 10, height = 7)
-DoHeatmap(os17.2, features = top10$gene) + NoLegend()
-# dev.off()
+pdf("All.pdf", width = 15, height = 10)
+p <- DoHeatmap(os17, features = top10$gene, size = 5) + NoLegend()
+p + theme(text = element_text(size=20, color = "black"))
+dev.off()
 
-#Markers
-VlnPlot(os17.3,
-        features = c("COL1A1", "LUM", "RUNX2", "SOX9", "CTSK", "JUN", "CD74", "SFRP2"),
-        slot = "counts",
-        ncol = 4,
-        log = TRUE)
+
+#Run through function
+em.hm <- DGEA(data)
+# 
+# #Remove non-LT clusters
+# em.hm <- em.hm[-c(1:4)]
+# clust.ids = sort(unique(data@active.ident))
+# clust.ids <- clust.ids[-c(1:4)]
+c <- rownames(em.hm)
+#remove "HALLMARK_"
+c <- gsub("HALLMARK_", "", c)
+#remove "_" by removing special characters
+c <- gsub("_", " ", c)
+rownames(em.hm) <- c
+# #remove rows with low pvalues
+# row_names_df_to_remove<-c("FATTY ACID METABOLISM",
+#                           "ADIPOGENESIS",
+#                           "PEROXISOME",
+#                           "SPERMATOGENESIS",
+#                           "XENOBIOTIC METABOLISM",
+#                           "PI3K AKT MTOR SIGNALING",
+#                           "HEDGEHOG SIGNALING")
+# em.hm <- em.hm[!(row.names(em.hm) %in% row_names_df_to_remove),]
+
+col.breaks=seq(-log10(1),min(max(-log10(em.hm))+1,20),by=0.5)
+col=inferno(length(col.breaks)) # library(viridis)
+col=c("white",colorRampPalette(brewer.pal(n = 7, name ="Reds"))(50))
+pdf("GSEA_OS17CTL.pdf", width = 15, height = 10)
+pheatmap(-log10(em.hm[,1:length(clust.ids)]),
+              cluster_rows = TRUE,
+              cluster_cols = FALSE,
+              cellwidth = 20,
+              cellheight = 10,
+              treeheight_row = 0,
+              treeheight_col=0,
+              color = col,
+              scale='none',
+              breaks=col.breaks,
+              fontsize = 11)
+dev.off()
+
+#########################Add module score for known markers 
+# Osteoblastic cells 	    RUNX2, COL1A1, CDH11, IBSP 
+# Chondroblastic cells 	  SOX9, ACAN, PTH1R 
+# Osteoclasts 	          ACP5, CTSK, MMP9 
+# Myeloid cells 	        CD74, CD14, FCGR3A 
+# Mesenchymal stem cells 	MME, THY1, CXCL12, SFRP2 
+# Proliferating cells 	  MKI67, TOP2A, PCNA 
+
+
+Ob_features <- list(c('RUNX2', 'COL1A1', 'CDH11', 'IBSP'))
+Cb_features <- list(c('SOX9', 'ACAN', 'PTH1R'))
+Oc_features <- list(c('ACP5', 'CTSK', 'MMP9'))
+MSC_features <- list(c('MME', 'THY1', 'CXCL12', 'SFRP2'))
+
+data <- os17.2
+
+data <- AddModuleScore(data, features = Ob_features, ctrl = 5, name = 'Ob_features')
+data <- AddModuleScore(data, features = Cb_features, ctrl = 5, name = 'Cb_features')
+data <- AddModuleScore(data, features = Oc_features, ctrl = 5, name = 'Oc_features')
+data <- AddModuleScore(data, features = MSC_features, ctrl = 5, name = 'MSC_features')
+
+# FeaturePlot(data, features = "Ob_features1", min.cutoff = 0)
+# FeaturePlot(data, features = "Cb_features1")
+# FeaturePlot(data, features = "Oc_features1")
+# FeaturePlot(data, features = "MSC_features1")
+
+RidgePlot(data, features = c("Ob_features1", "Cb_features1", "Oc_features1", "MSC_features1"))
+# FeatureScatter(seurat, "Ob_features", "nFeature_RNA")
