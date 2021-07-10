@@ -4,7 +4,6 @@ load("R:/RESRoberts/Bioinformatics/Analysis/Sanjana/2020/17.Harmony/Harmony in i
 data <- OS.list[[1]] 
 DimPlot(data, reduction = "umap", pt.size = 1, label = T) + 
   coord_fixed() + 
-  ggtitle("Ob Clusters") + 
   scale_color_npg(alpha = 0.7)
 
 #Set optimum resolution for clustering
@@ -74,9 +73,9 @@ ggplot(SanjanaPlots2, aes(x = -1 * Order,
 # OS7.Lung <- OS.list[[13]]
 
 for (i in 1:13) {
-  OS.list[[i]] <- AddModuleScore(OS.list[[i]], features = cluster0, ctrl = 5, name = 'cluster0')
-  OS.list[[i]] <- AddModuleScore(OS.list[[i]], features = cluster1, ctrl = 5, name = 'cluster1')
-  OS.list[[i]] <- AddModuleScore(OS.list[[i]], features = cluster2, ctrl = 5, name = 'cluster2')
+  OS.list[[i]] <- AddModuleScore(OS.list[[i]], features = cluster0, ctrl = 5, name = 'Red')
+  OS.list[[i]] <- AddModuleScore(OS.list[[i]], features = cluster1, ctrl = 5, name = 'Blue')
+  OS.list[[i]] <- AddModuleScore(OS.list[[i]], features = cluster2, ctrl = 5, name = 'Green')
 }
 
 plot1 <- DotPlot(OS.list[[2]], features = c("cluster01", "cluster11", "cluster21")) + coord_flip() 
