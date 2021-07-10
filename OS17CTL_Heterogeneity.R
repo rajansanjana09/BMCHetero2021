@@ -151,26 +151,13 @@ dev.off()
 
 #Run through function
 em.hm <- DGEA(data)
-# 
-# #Remove non-LT clusters
-# em.hm <- em.hm[-c(1:4)]
-# clust.ids = sort(unique(data@active.ident))
-# clust.ids <- clust.ids[-c(1:4)]
+
 c <- rownames(em.hm)
 #remove "HALLMARK_"
 c <- gsub("HALLMARK_", "", c)
 #remove "_" by removing special characters
 c <- gsub("_", " ", c)
 rownames(em.hm) <- c
-# #remove rows with low pvalues
-# row_names_df_to_remove<-c("FATTY ACID METABOLISM",
-#                           "ADIPOGENESIS",
-#                           "PEROXISOME",
-#                           "SPERMATOGENESIS",
-#                           "XENOBIOTIC METABOLISM",
-#                           "PI3K AKT MTOR SIGNALING",
-#                           "HEDGEHOG SIGNALING")
-# em.hm <- em.hm[!(row.names(em.hm) %in% row_names_df_to_remove),]
 
 col.breaks=seq(-log10(1),min(max(-log10(em.hm))+1,20),by=0.5)
 col=inferno(length(col.breaks)) # library(viridis)
